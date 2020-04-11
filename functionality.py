@@ -13,20 +13,26 @@ def DatasetSelection():
     dataset = input ("Please write the dataset to analyse: ")
     return dataset.lower()
 
-#THIS need to be optimized: there are various filters to be taken in consideration. All the filters are displayed in "id" key in the Json file
+#Optimed to get all the filters from the id[] in the Json
 def GetFilter(url):
     response = requests.get(url)
     data = response.json()
+    print(f"{data['label']} - updated: {data['updated']} \n \n")
 
-    print('Choose one of the following label:')
+    filterDictionary = {}
 
-    #retrieve the filters to be applied
-    for x,y in data['dimension']['unit']['category']['label'].items():
-        print (f'{x} - {y}')
-    #get user selection
-    unit = input(': ')
+    for x in data['id']:
+        if (x != 'geo' and x!='time'):
+            print(f'{x} : Choose one of the following label:')
+            for key,value in data['dimension'][x]['category']['label'].items():
+                print (f'{key} - {value}')
+            unit = input(': ')
+            filterDictionary[x] = unit.upper()
+    
+    for xFilter, yFilter in filterDictionary.items():
+        url = f'{url}&{xFilter}={yFilter}'
 
-    return f'{url}&unit={unit.upper()}'
+    return url
 
 def GetValues(url, xValuesList, yValuesList):
     response = requests.get(url)
