@@ -13,26 +13,33 @@ def DatasetSelection():
     dataset = input ("Please write the dataset to analyse: ")
     return dataset.lower()
 
-#Optimed to get all the filters from the id[] in the Json
+#ISSUE: Deal with dataset that presents more than 50 params (response 416)
 def GetFilter(url):
     response = requests.get(url)
-    data = response.json()
-    print(f"{data['label']} - updated: {data['updated']} \n \n")
+    if response.status_code == 200:
+        data = response.json()
+        print(f"{data['label']} - updated: {data['updated']} \n \n")
 
-    filterDictionary = {}
+        filterDictionary = {}
 
-    for x in data['id']:
-        if (x != 'geo' and x!='time'):
-            print(f'{x} : Choose one of the following label:')
-            for key,value in data['dimension'][x]['category']['label'].items():
-                print (f'{key} - {value}')
-            unit = input(': ')
-            filterDictionary[x] = unit.upper()
-    
-    for xFilter, yFilter in filterDictionary.items():
-        url = f'{url}&{xFilter}={yFilter}'
+        for x in data['id']:
+            if (x != 'geo' and x!='time'):
+                print(f'{x} : Choose one of the following label:')
+                for key,value in data['dimension'][x]['category']['label'].items():
+                    print (f'{key} - {value}')
+                unit = input(': ')
+                filterDictionary[x] = unit.upper()
+        
+        for xFilter, yFilter in filterDictionary.items():
+            url = f'{url}&{xFilter}={yFilter}'
 
-    return url
+        return url
+    elif response.status_code == 416:
+        print("Too many categories have been requested. Maximum is 50")
+    #ISSUE: temporarly restrit the research and retrieve so other filters to be aplied on the first request
+    else:
+        print("Something went wrong. Please check again the parameters entered")
+
 
 def GetValues(url, xValuesList, yValuesList):
     response = requests.get(url)
@@ -44,10 +51,10 @@ def GetValues(url, xValuesList, yValuesList):
                 xValuesList.append(key)
                 yValuesList.append(y)
 
-def ChartCreate(url, xValuesList, yValuesList):
+def ChartCreate(url, xValuesList, yValuesList, country):
     response = requests.get(url)
     data = response.json()
-    title = f"{data['label']} \n {data['dimension']['unit']['category']['label']}"
+    title = f"{country} - {data['label']} \n {data['extension']['description']}"
 
     plt.bar(xValuesList, yValuesList)
     plt.title(title)

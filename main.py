@@ -15,4 +15,4 @@ if __name__ == "__main__":
 
     GetValues(address, xValues, yValues)
 
-    ChartCreate(address, xValues,yValues)
+    ChartCreate(address, xValues,yValues, country)
