@@ -2,15 +2,17 @@ import requests
 import numpy as np
 import json
 import matplotlib.pyplot as plt
+import random
 
 #TO BE IMPLEMENTED: this would ask the user to select a country
+#with datasets.DatasetStructure() this ca be omitted and joined in a macro GetFilter()
 def CountrySelect():
     country = input('Please select the country: ')
     return country.upper()
 
 #TO BE IMPLEMENTED: this would ask the user to select the dataset
-def DatasetSelection():
-    dataset = input ("Please write the dataset to analyse: ")
+def DatasetSelection(diction): #diction added only for debugging purpouses
+    dataset = input (f"Please write the dataset to analyse: {random.choice(list(diction.keys()))} ")
     return dataset.lower()
 
 #ISSUE: Deal with dataset that presents more than 50 params (response 416)
@@ -36,9 +38,11 @@ def GetFilter(url):
         return url
     elif response.status_code == 416:
         print("Too many categories have been requested. Maximum is 50")
+        exit()
     #ISSUE: temporarly restrit the research and retrieve so other filters to be aplied on the first request
     else:
         print("Something went wrong. Please check again the parameters entered")
+        exit()
 
 
 def GetValues(url, xValuesList, yValuesList):
@@ -54,7 +58,8 @@ def GetValues(url, xValuesList, yValuesList):
 def ChartCreate(url, xValuesList, yValuesList, country):
     response = requests.get(url)
     data = response.json()
-    title = f"{country} - {data['label']} \n {data['extension']['description']}"
+    title = f"{country} - {data['label']}"
+    print(data['extension']['description'])
 
     plt.bar(xValuesList, yValuesList)
     plt.title(title)
