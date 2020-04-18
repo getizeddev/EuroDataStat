@@ -15,8 +15,7 @@ def DatasetsName() -> dict:
 
 
 #this method would retrieve the structure of each dataset so that the Filters would be asked 
-# before the json request, avoiding the 416 error response
-#This would allow to fix functionality.GetFilter() 
+# before the json request, avoiding the 416 error response 
 def DatasetStructure(datasetStructureId):
     structure = requests.get(f"http://ec.europa.eu/eurostat/SDMX/diss-web/rest/datastructure/ESTAT/{datasetStructureId}")
     data = structure.content
@@ -27,5 +26,3 @@ def DatasetStructure(datasetStructureId):
             filtersDictionary[codelist[0].text] = [[code.get('id'), code [0].text] for code in codelist[1:]]
     
     return filtersDictionary
-
-print(DatasetStructure("DSD_nama_10_gdp"))

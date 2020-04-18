@@ -4,61 +4,43 @@ import json
 import matplotlib.pyplot as plt
 import random
 
-#TO BE IMPLEMENTED: this would ask the user to select a country
-#with datasets.DatasetStructure() this ca be omitted and joined in a macro GetFilter()
-def CountrySelect():
-    country = input('Please select the country: ')
-    return country.upper()
-
-#TO BE IMPLEMENTED: this would ask the user to select the dataset
+#This function asks the user to select the dataset
 def DatasetSelection(diction): #diction added only for debugging purpouses
     dataset = input (f"Please write the dataset to analyse: {random.choice(list(diction.keys()))} ")
     return dataset.lower()
 
-#ISSUE: Deal with dataset that presents more than 50 params (response 416)
-def GetFilter(url):
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        print(f"{data['label']} - updated: {data['updated']} \n \n")
+#This function, after retrieving the structure of the dataset, asks the user to apply the desired filters
+def GetFilter(url, datasetStructure):
+    print("Select the filters to be applied")
+    for x in datasetStructure.keys():
+        print(x)
+        for filter in datasetStructure[x]:
+            print(f"{filter[0]} - {filter[1]}")
+        filterselected = input()
+        url = url+f"&{x.lower()}={filterselected.upper()}"
+    return url
 
-        filterDictionary = {}
-
-        for x in data['id']:
-            if (x != 'geo' and x!='time'):
-                print(f'{x} : Choose one of the following label:')
-                for key,value in data['dimension'][x]['category']['label'].items():
-                    print (f'{key} - {value}')
-                unit = input(': ')
-                filterDictionary[x] = unit.upper()
-        
-        for xFilter, yFilter in filterDictionary.items():
-            url = f'{url}&{xFilter}={yFilter}'
-
-        return url
-    elif response.status_code == 416:
-        print("Too many categories have been requested. Maximum is 50")
-        exit()
-    #ISSUE: temporarly restrit the research and retrieve so other filters to be aplied on the first request
-    else:
-        print("Something went wrong. Please check again the parameters entered")
-        exit()
-
-
+#This function retrieves the data allocating them in 2 lists[] of values 
+#ISSUE: sometimes some filters of the structure don't exist for the selecting country, generating a 400 response
 def GetValues(url, xValuesList, yValuesList):
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        for x, y in data["value"].items():
+            for key, value in data["dimension"]["time"]["category"]['index'].items():
+                if str(value) == x:
+                    xValuesList.append(key)
+                    yValuesList.append(y)
+    except KeyError:
+        print(f'{response.status_code} - Probably one of the filter doesn\'t apply to the country selected')
+        exit()
+
+#This function visualizes the data
+def ChartCreate(url, xValuesList, yValuesList):
     response = requests.get(url)
     data = response.json()
-
-    for x, y in data["value"].items():
-        for key, value in data["dimension"]["time"]["category"]['index'].items():
-            if str(value) == x:
-                xValuesList.append(key)
-                yValuesList.append(y)
-
-def ChartCreate(url, xValuesList, yValuesList, country):
-    response = requests.get(url)
-    data = response.json()
-    title = f"{country} - {data['label']}"
+    title = data['label']
     print(data['extension']['description'])
 
     plt.bar(xValuesList, yValuesList)
