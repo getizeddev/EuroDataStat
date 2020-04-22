@@ -1,9 +1,17 @@
 import functionality as func
 import datasets as dt
+# import gui
+# import tkinter as tkr
+
+#Time to add the GUI -> TkInter
 
 if __name__ == "__main__":
 
+    #multithreding to open a loading screen while generating the datasets dictionary
     datasetDictionary = dt.DatasetsName()
+
+    # root = tkr.Tk()
+    # application = gui.App(root)
 
     dataset = func.DatasetSelection(datasetDictionary) #see comment in func
     print(datasetDictionary[dataset][0])
