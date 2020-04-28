@@ -9,6 +9,21 @@ def DatasetSelection(diction): #diction added only for debugging purpouses
     dataset = input (f"Please write the dataset to analyse: {random.choice(list(diction.keys()))} ")
     return dataset.lower()
 
+#This function implement the Dataset search of the GUI
+def searchDataset(entryText, dataset):
+    searchResultList = {}
+    for x, y in dataset.items():
+        if (entryText.lower() in x.lower() or entryText.lower() in y[0].lower()):
+            searchResultList[x] = y[0]
+    return searchResultList 
+
+def datasetSelectionGui(selection, datasetsDictionary):
+    start = selection.find("[") + 1
+    end = selection.find("]")
+    result = selection[start:end]
+    return result
+    
+
 #This function, after retrieving the structure of the dataset, asks the user to apply the desired filters
 def GetFilter(url, datasetStructure):
     print("Select the filters to be applied")
