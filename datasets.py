@@ -3,6 +3,10 @@ import requests
 
 #This would return a dictionay {datasetId: [datasetName, datasetStructureId]}
 def DatasetsName() -> dict:
+    """
+        Method connecting to the list of datasets in the database.
+        Returns: dictionary {datasetId: [datasetName, datasetStructureId]}
+    """
     endpoint = requests.get("http://ec.europa.eu/eurostat/SDMX/diss-web/rest/dataflow/ESTAT/all/latest")
     structure = endpoint.content
     doc = xmlET.fromstring(structure)
@@ -16,7 +20,11 @@ def DatasetsName() -> dict:
 
 #this method would retrieve the structure of each dataset so that the Filters would be asked 
 # before the json request, avoiding the 416 error response 
-def DatasetStructure(datasetStructureId):
+def DatasetStructure(datasetStructureId: str) -> dict:
+    """
+        This method retrieves the structure of each dataset.
+        Returns: dictionary {filterID: [filters that can be applied]}
+    """
     structure = requests.get(f"http://ec.europa.eu/eurostat/SDMX/diss-web/rest/datastructure/ESTAT/{datasetStructureId}")
     data = structure.content
     doc = xmlET.fromstring(data)
