@@ -4,14 +4,15 @@ import functionality as func
 
 class App:
     def __init__(self, master, database):
-        #Menu
-        # |SearchBar| |SearchButton|    | Filters
-        # |ListResults |                |"
-        # |Select Button |              |"
-        # |SeeData(or export excel)     |Create Chart Button
-     
+        
+        self.datasetSelected = None
 
-        def populateList(listbox):
+
+        def populateList(listbox: tkr.Listbox):
+            """
+                The method populates the listbox with the names of the datasets matching the search of the user,
+                basically visualizing the results of func.searchDataset
+            """
             if self.searchBar.get() != "":
                 listbox.delete(0 , tkr.END)
                 results = func.searchDataset(self.searchBar.get(), database)
@@ -19,16 +20,22 @@ class App:
                     listbox.insert(0, f'{y} [{x}]')
 
         #temporary: clear filter each time
-        def populateFilters(frame):
+        def populateFilters(frame: tkr.Frame):
+            """
+                Method displaying a listbox for each filter. The method also assigning to
+                self.datasetSelected the correct value
+            """
             filterList = None
-            dataset = func.datasetSelectionGui(self.resultList.get(tkr.ANCHOR), database)
-            dataStructure = dt.DatasetStructure(database[dataset][1])
-            counter = 0
+            self.datasetSelected = func.datasetSelectionGui(self.resultList.get(tkr.ANCHOR))
+            dataStructure = dt.DatasetStructure(database[self.datasetSelected][1])
+            filters = tkr.Label(frame, text="FILTERS")
+            filters.grid(row=0, column=0, columnspan=2)
+            counter = 1
             for x in dataStructure.keys():
                 filterTitle = tkr.Label(frame, text=str(x))
-                filterTitle.grid(row=0, column=counter)
-                filterList = tkr.Listbox(frame, width=30)
-                filterList.grid(row=1, column=counter)
+                filterTitle.grid(row=counter, column=0)
+                filterList = tkr.Listbox(frame, width=30, height=5)
+                filterList.grid(row=counter, column=1)
                 for y in dataStructure[x]:
                     filterList.insert(tkr.END,y)
                 counter += 1
@@ -52,7 +59,9 @@ class App:
         self.selectButton.grid(row=2, column=0, padx=5, sticky=tkr.W)
         #debugger
         self.frame = tkr.Frame(master, width=100)
-        self.frame.grid(row=1, column=4)
+        self.frame.grid(row=1, column=6, rowspan=6)
+    
+        
 
 
 
