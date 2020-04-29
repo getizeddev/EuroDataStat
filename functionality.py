@@ -10,18 +10,37 @@ def DatasetSelection(diction): #diction added only for debugging purpouses
     return dataset.lower()
 
 #This function implement the Dataset search of the GUI
-def searchDataset(entryText, dataset):
+def searchDataset(entryText: str, database: dict) -> dict:
+    """
+    This function filters the database, searching the dataset(s) that match the entry of the user
+    
+    Parameters:
+        entryText(str): the string typed by the user in the search bar
+        database(dict): the whole database of Eurostat containing all the dataset and datastructures:
+            see DatasetsName in datasets.py
+
+    Returns:
+        A dictionary of datasets matching the entrysearch: {datasetID: datasetName}
+
+    """
     searchResultList = {}
-    for x, y in dataset.items():
+    for x, y in database.items():
         if (entryText.lower() in x.lower() or entryText.lower() in y[0].lower()):
             searchResultList[x] = y[0]
     return searchResultList 
 
-def datasetSelectionGui(selection, datasetsDictionary):
+def datasetSelectionGui(selection: str) -> str:
+    """
+        From the dataset selected in the results listBox, this function simply retrieves the datasetID.
+
+        Parameters:
+            selection(str): selected entry in the results listBox
+
+    """
     start = selection.find("[") + 1
     end = selection.find("]")
-    result = selection[start:end]
-    return result
+    datasetID = selection[start:end]
+    return datasetID
     
 
 #This function, after retrieving the structure of the dataset, asks the user to apply the desired filters
