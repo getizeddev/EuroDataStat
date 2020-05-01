@@ -4,10 +4,6 @@ import json
 import matplotlib.pyplot as plt
 import random
 
-#This function asks the user to select the dataset
-def DatasetSelection(diction): #diction added only for debugging purpouses
-    dataset = input (f"Please write the dataset to analyse: {random.choice(list(diction.keys()))} ")
-    return dataset.lower()
 
 #This function implement the Dataset search of the GUI
 def searchDataset(entryText: str, database: dict) -> dict:
@@ -54,9 +50,11 @@ def GetFilter(url, datasetStructure):
         url = url+f"&{x.lower()}={filterselected.upper()}"
     return url
 
-#This function retrieves the data allocating them in 2 lists[] of values 
-#ISSUE: sometimes some filters of the structure don't exist for the selecting country, generating a 400 response
-def GetValues(url, xValuesList, yValuesList):
+
+def GetValues(url: str, xValuesList: list, yValuesList: list):
+    """
+        This function send a get request to the dataset endpoint and retrieves the values accordingly. The values are then populating the 2 lists of xValuea and yValues 
+    """
     try:
         response = requests.get(url)
         data = response.json()
@@ -70,13 +68,16 @@ def GetValues(url, xValuesList, yValuesList):
         print(f'{response.status_code} - Probably one of the filter doesn\'t apply to the country selected')
         exit()
 
-#This function visualizes the data
-def ChartCreate(url, xValuesList, yValuesList):
-    response = requests.get(url)
-    data = response.json()
-    title = data['label']
-    print(data['extension']['description'])
 
-    plt.bar(xValuesList, yValuesList)
-    plt.title(title)
-    plt.show()
+def ChartCreate(url: str, xValuesList: list, yValuesList: list):
+    """
+        Simple data visualization
+    """
+    with requests.get(url) as response:
+        data = response.json()
+        title = data['label']
+        print(data['extension']['description'])
+
+        plt.bar(xValuesList, yValuesList)
+        plt.title(title)
+        plt.show(block=False)
