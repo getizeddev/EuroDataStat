@@ -39,16 +39,7 @@ def datasetSelectionGui(selection: str) -> str:
     return datasetID
     
 
-#This function, after retrieving the structure of the dataset, asks the user to apply the desired filters
-def GetFilter(url, datasetStructure):
-    print("Select the filters to be applied")
-    for x in datasetStructure.keys():
-        print(x)
-        for filter in datasetStructure[x]:
-            print(f"{filter[0]} - {filter[1]}")
-        filterselected = input()
-        url = url+f"&{x.lower()}={filterselected.upper()}"
-    return url
+
 
 
 def GetValues(url: str, xValuesList: list, yValuesList: list):
@@ -65,6 +56,7 @@ def GetValues(url: str, xValuesList: list, yValuesList: list):
                     xValuesList.append(key)
                     yValuesList.append(y)
     except KeyError:
+        #This needs to be fixed
         print(f'{response.status_code} - Probably one of the filter doesn\'t apply to the country selected')
         exit()
 
