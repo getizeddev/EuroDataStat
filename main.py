@@ -2,7 +2,6 @@ import gui
 import datasets as dt
 import tkinter as tkr
 
-#Time to add the GUI -> TkInter
 
 if __name__ == "__main__":
 
