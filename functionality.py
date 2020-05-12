@@ -2,7 +2,7 @@ import requests
 import numpy as np
 import json
 import matplotlib.pyplot as plt
-import random
+import xlsxwriter as xl
 
 
 #This function implement the Dataset search of the GUI
@@ -73,3 +73,20 @@ def ChartCreate(url: str, xValuesList: list, yValuesList: list):
         plt.bar(xValuesList, yValuesList)
         plt.title(title)
         plt.show(block=False)
+
+
+def DownloadData(xList: list, yList: list):
+    """
+        The method retireves the data stored in the x and y values list and download them in an Excel worksheet
+    """
+    with xl.Workbook('Data.xlsx') as wk:
+        worksheet = wk.add_worksheet()
+        worksheet.write(0,0,'x')
+        worksheet.write(0,1,'y')
+        row = 0
+        column = 0
+        while row < len(xList):
+            worksheet.write(row + 1, column, xList[row])
+            worksheet.write(row + 1, column + 1, yList[row])
+            row +=1
+
